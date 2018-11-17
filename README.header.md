@@ -32,7 +32,7 @@ var Client = require('fcash-wallet-client');
 
 
 var fs = require('fs');
-var BWS_INSTANCE_URL = 'https://bws.bitpay.com/bws/api'
+var BWS_INSTANCE_URL = 'https://bws.fcash.cash/bws/api'
 
 var client = new Client({
   baseUrl: BWS_INSTANCE_URL,
@@ -58,7 +58,7 @@ var Client = require('fcash-wallet-client');
 
 
 var fs = require('fs');
-var BWS_INSTANCE_URL = 'https://bws.bitpay.com/bws/api'
+var BWS_INSTANCE_URL = 'https://bws.fcash.cash/bws/api'
 
 var secret = process.argv[2];
 if (!secret) {
