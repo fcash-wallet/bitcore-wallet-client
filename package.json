@@ -2,7 +2,7 @@
   "name": "fcash-wallet-client",
   "description": "Client for fcash-wallet-service",
   "author": "Fcash Inc",
-  "version": "6.7.5",
+  "version": "8.0.2",
   "license": "MIT",
   "keywords": [
     "bitcoin",
