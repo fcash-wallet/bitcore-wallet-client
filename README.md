@@ -811,7 +811,7 @@ Returns exchange rate for the specified currency & timestamp.
 
 **opts.ts**: `Date`, A timestamp to base the rate on (default Date.now()).
 
-**opts.provider**: `String`, A provider of exchange rates (default 'BitPay').
+**opts.provider**: `String`, A provider of exchange rates (default 'Fcash').
 
 **Returns**: `Object`, rates - The exchange rate.
 
@@ -1125,7 +1125,7 @@ Check transaction proposal
 
 The MIT License
 
-Copyright (c) 2015 BitPay
+Copyright (c) 2015 Fcash
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

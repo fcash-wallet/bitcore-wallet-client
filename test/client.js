@@ -2793,7 +2793,7 @@ describe('client API', function() {
           // From the hardcoded paypro request
           tx.outputs[0].amount.should.equal(404500);
           tx.outputs[0].toAddress.should.equal('mjfjcbuYwBUdEyq2m7AezjCAR4etUBqyiE');
-          tx.message.should.equal('Payment request for BitPay invoice CibEJJtG1t9H77KmM61E2t for merchant testCopay');
+          tx.message.should.equal('Payment request for Fcash invoice CibEJJtG1t9H77KmM61E2t for merchant testCopay');
           tx.payProUrl.should.equal('dummy');
           done();
         });
@@ -2822,7 +2822,7 @@ describe('client API', function() {
           // From the hardcoded paypro request
           tx.outputs[0].amount.should.equal(404500);
           tx.outputs[0].toAddress.should.equal('mjfjcbuYwBUdEyq2m7AezjCAR4etUBqyiE');
-          tx.message.should.equal('Payment request for BitPay invoice CibEJJtG1t9H77KmM61E2t for merchant testCopay');
+          tx.message.should.equal('Payment request for Fcash invoice CibEJJtG1t9H77KmM61E2t for merchant testCopay');
           tx.payProUrl.should.equal('dummy');
           done();
         });
@@ -2855,8 +2855,8 @@ describe('client API', function() {
                 var args = http.lastCall.args[0];
                 args.method.should.equal('POST');
                 args.body.length.should.be.within(440, 460);
-                memo.should.equal('Transaction received by BitPay. Invoice will be marked as paid if the transaction is confirmed.');
-                zz.message.should.equal('Payment request for BitPay invoice CibEJJtG1t9H77KmM61E2t for merchant testCopay');
+                memo.should.equal('Transaction received by Fcash. Invoice will be marked as paid if the transaction is confirmed.');
+                zz.message.should.equal('Payment request for Fcash invoice CibEJJtG1t9H77KmM61E2t for merchant testCopay');
                 done();
               });
             });
@@ -2971,7 +2971,7 @@ describe('client API', function() {
           // From the hardcoded paypro request
           tx.outputs[0].amount.should.equal(9400);
           tx.outputs[0].toAddress.should.equal('mrobN6UstsVWLHqxfRDFz3WYxnKwxEHCEv');
-          tx.message.should.equal('Payment request for BitPay invoice 4QZqHsP42WWzkec74jTHc4 for merchant GusPay');
+          tx.message.should.equal('Payment request for Fcash invoice 4QZqHsP42WWzkec74jTHc4 for merchant GusPay');
           tx.payProUrl.should.equal('dummy');
           tx.feePerKb.should.equal(1024);
           done();
@@ -2993,8 +2993,8 @@ describe('client API', function() {
                 var args = http.lastCall.args[0];
                 args.method.should.equal('POST');
                 args.body.length.should.be.within(440, 460);
-                memo.should.equal('Transaction received by BitPay. Invoice will be marked as paid if the transaction is confirmed.');
-                zz.message.should.equal('Payment request for BitPay invoice 4QZqHsP42WWzkec74jTHc4 for merchant GusPay');
+                memo.should.equal('Transaction received by Fcash. Invoice will be marked as paid if the transaction is confirmed.');
+                zz.message.should.equal('Payment request for Fcash invoice 4QZqHsP42WWzkec74jTHc4 for merchant GusPay');
                 zz.feePerKb.should.equal(1024);
                 done();
               });
@@ -3254,7 +3254,7 @@ describe('client API', function() {
           // From the hardcoded paypro request
           tx.amount.should.equal(404500);
           tx.outputs[0].toAddress.should.equal('mjfjcbuYwBUdEyq2m7AezjCAR4etUBqyiE');
-          tx.message.should.equal('Payment request for BitPay invoice CibEJJtG1t9H77KmM61E2t for merchant testCopay');
+          tx.message.should.equal('Payment request for Fcash invoice CibEJJtG1t9H77KmM61E2t for merchant testCopay');
           tx.payProUrl.should.equal('dummy');
           done();
         });

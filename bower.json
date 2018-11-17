@@ -3,7 +3,7 @@
   "main": "index.js",
   "version": "2.1.1",
   "homepage": "https://github.com/fcash-wallet/fcash-et-client",
-  "authors": ["BitPay Inc"],
+  "authors": ["Fcash Inc"],
   "description": "Client for fcash-et-service",
   "keywords": [
     "bitcoin",
