@@ -16,16 +16,16 @@ var tingodb = require('tingodb')({
 
 var log = require('../lib/log');
 
-var Bitcore = require('bitcore-lib');
-var Bitcore_ = {
-  btc: Bitcore,
-  bch: require('bitcore-lib-cash'),
+var Fcash = require('fcash-lib');
+var Fcash_ = {
+  btc: Fcash,
+  bch: require('fcash-lib-cash'),
 };
 
 
-var BitcorePayPro = require('bitcore-payment-protocol');
+var FcashPayPro = require('fcash-payment-protocol');
 
-var BWS = require('bitcore-wallet-service');
+var BWS = require('fcash-wallet-service');
 
 var Common = require('../lib/common');
 var Constants = Common.Constants;
@@ -89,16 +89,16 @@ helpers.generateUtxos = function(scriptType, publicKeyRing, path, requiredSignat
     var scriptPubKey;
     switch (scriptType) {
       case Constants.SCRIPT_TYPES.P2SH:
-        scriptPubKey = Bitcore.Script.buildMultisigOut(address.publicKeys, requiredSignatures).toScriptHashOut();
+        scriptPubKey = Fcash.Script.buildMultisigOut(address.publicKeys, requiredSignatures).toScriptHashOut();
         break;
       case Constants.SCRIPT_TYPES.P2PKH:
-        scriptPubKey = Bitcore.Script.buildPublicKeyHashOut(address.address);
+        scriptPubKey = Fcash.Script.buildPublicKeyHashOut(address.address);
         break;
     }
     should.exist(scriptPubKey);
 
     var obj = {
-      txid: Bitcore.crypto.Hash.sha256(new Buffer(i)).toString('hex'),
+      txid: Fcash.crypto.Hash.sha256(new Buffer(i)).toString('hex'),
       vout: 100,
       satoshis: helpers.toSatoshi(amount),
       scriptPubKey: scriptPubKey.toBuffer().toString('hex'),
@@ -206,7 +206,7 @@ blockchainExplorerMock.getUtxos = function(addresses, cb) {
 };
 
 blockchainExplorerMock.setUtxo = function(address, amount, m, confirmations) {
-  var B = Bitcore_[address.coin];
+  var B = Fcash_[address.coin];
   var scriptPubKey;
   switch (address.type) {
     case Constants.SCRIPT_TYPES.P2SH:
@@ -218,7 +218,7 @@ blockchainExplorerMock.setUtxo = function(address, amount, m, confirmations) {
   }
   should.exist(scriptPubKey);
   blockchainExplorerMock.utxos.push({
-    txid: Bitcore.crypto.Hash.sha256(new Buffer(Math.random() * 100000)).toString('hex'),
+    txid: Fcash.crypto.Hash.sha256(new Buffer(Math.random() * 100000)).toString('hex'),
     vout: Math.floor((Math.random() * 10) + 1),
     amount: amount,
     address: address.address,
@@ -229,7 +229,7 @@ blockchainExplorerMock.setUtxo = function(address, amount, m, confirmations) {
 
 blockchainExplorerMock.broadcast = function(raw, cb) {
   blockchainExplorerMock.lastBroadcasted = raw;
-  return cb(null, (new Bitcore.Transaction(raw)).id);
+  return cb(null, (new Fcash.Transaction(raw)).id);
 };
 
 blockchainExplorerMock.setHistory = function(txs) {
@@ -343,9 +343,9 @@ describe('client API', function() {
   });
 
   describe('Client Internals', function() {
-    it('should expose bitcore', function() {
-      should.exist(Client.Bitcore);
-      should.exist(Client.Bitcore.HDPublicKey);
+    it('should expose fcash', function() {
+      should.exist(Client.Fcash);
+      should.exist(Client.Fcash.HDPublicKey);
     });
   });
 
@@ -491,9 +491,9 @@ describe('client API', function() {
   describe('Build & sign txs', function() {
     var masterPrivateKey = 'tprv8ZgxMBicQKsPd8U9aBBJ5J2v8XMwKwZvf8qcu2gLK5FRrsrPeSgkEcNHqKx4zwv6cP536m68q2UD7wVM24zdSCpaJRmpowaeJTeVMXL5v5k';
     var derivedPrivateKey = {
-      'BIP44': new Bitcore.HDPrivateKey(masterPrivateKey).deriveChild("m/44'/1'/0'").toString(),
-      'BIP45': new Bitcore.HDPrivateKey(masterPrivateKey).deriveChild("m/45'").toString(),
-      'BIP48': new Bitcore.HDPrivateKey(masterPrivateKey).deriveChild("m/48'/1'/0'").toString(),
+      'BIP44': new Fcash.HDPrivateKey(masterPrivateKey).deriveChild("m/44'/1'/0'").toString(),
+      'BIP45': new Fcash.HDPrivateKey(masterPrivateKey).deriveChild("m/45'").toString(),
+      'BIP48': new Fcash.HDPrivateKey(masterPrivateKey).deriveChild("m/48'/1'/0'").toString(),
     };
 
     describe('#buildTx', function() {
@@ -502,7 +502,7 @@ describe('client API', function() {
         var changeAddress = 'msj42CCGruhRsFrGATiUuh25dtxYtnpbTx';
 
         var publicKeyRing = [{
-          xPubKey: new Bitcore.HDPublicKey(derivedPrivateKey['BIP44']),
+          xPubKey: new Fcash.HDPublicKey(derivedPrivateKey['BIP44']),
         }];
 
         var utxos = helpers.generateUtxos('P2PKH', publicKeyRing, 'm/1/0', 1, [1000, 2000]);
@@ -525,7 +525,7 @@ describe('client API', function() {
         _.isString(t).should.be.true;
         /^[\da-f]+$/.test(t).should.be.true;
 
-        var t2 = new Bitcore.Transaction(t);
+        var t2 = new Fcash.Transaction(t);
         t2.inputs.length.should.equal(2);
         t2.outputs.length.should.equal(2);
         t2.outputs[0].satoshis.should.equal(1200);
@@ -535,7 +535,7 @@ describe('client API', function() {
         var changeAddress = 'msj42CCGruhRsFrGATiUuh25dtxYtnpbTx';
 
         var publicKeyRing = [{
-          xPubKey: new Bitcore.HDPublicKey(derivedPrivateKey['BIP44']),
+          xPubKey: new Fcash.HDPublicKey(derivedPrivateKey['BIP44']),
         }];
 
         var utxos = helpers.generateUtxos('P2PKH', publicKeyRing, 'm/1/0', 1, [1000, 2000]);
@@ -554,13 +554,13 @@ describe('client API', function() {
           addressType: 'P2PKH',
         };
         var t = Utils.buildTx(txp);
-        var bitcoreError = t.getSerializationError({
+        var fcashError = t.getSerializationError({
           disableIsFullySigned: true,
           disableSmallFees: true,
           disableLargeFees: true,
         });
 
-        should.not.exist(bitcoreError);
+        should.not.exist(fcashError);
         t.getFee().should.equal(10050);
       });
       it('should build a tx correctly (BIP48)', function() {
@@ -568,7 +568,7 @@ describe('client API', function() {
         var changeAddress = 'msj42CCGruhRsFrGATiUuh25dtxYtnpbTx';
 
         var publicKeyRing = [{
-          xPubKey: new Bitcore.HDPublicKey(derivedPrivateKey['BIP48']),
+          xPubKey: new Fcash.HDPublicKey(derivedPrivateKey['BIP48']),
         }];
 
         var utxos = helpers.generateUtxos('P2PKH', publicKeyRing, 'm/1/0', 1, [1000, 2000]);
@@ -587,13 +587,13 @@ describe('client API', function() {
           addressType: 'P2PKH',
         };
         var t = Utils.buildTx(txp);
-        var bitcoreError = t.getSerializationError({
+        var fcashError = t.getSerializationError({
           disableIsFullySigned: true,
           disableSmallFees: true,
           disableLargeFees: true,
         });
 
-        should.not.exist(bitcoreError);
+        should.not.exist(fcashError);
         t.getFee().should.equal(10050);
       });
       it('should protect from creating excessive fee', function() {
@@ -601,7 +601,7 @@ describe('client API', function() {
         var changeAddress = 'msj42CCGruhRsFrGATiUuh25dtxYtnpbTx';
 
         var publicKeyRing = [{
-          xPubKey: new Bitcore.HDPublicKey(derivedPrivateKey['BIP44']),
+          xPubKey: new Fcash.HDPublicKey(derivedPrivateKey['BIP44']),
         }];
 
         var utxos = helpers.generateUtxos('P2PKH', publicKeyRing, 'm/1/0', 1, [1, 2]);
@@ -619,9 +619,9 @@ describe('client API', function() {
           addressType: 'P2PKH',
         };
 
-        var x = Utils.newBitcoreTransaction;
+        var x = Utils.newFcashTransaction;
 
-        Utils.newBitcoreTransaction = function() {
+        Utils.newFcashTransaction = function() {
           return {
             from: sinon.stub(),
             to: sinon.stub(),
@@ -637,14 +637,14 @@ describe('client API', function() {
           var t = Utils.buildTx(txp);
         }).should.throw('Illegal State');
 
-        Utils.newBitcoreTransaction = x;
+        Utils.newFcashTransaction = x;
       });
       it('should build a tx with multiple outputs', function() {
         var toAddress = 'msj42CCGruhRsFrGATiUuh25dtxYtnpbTx';
         var changeAddress = 'msj42CCGruhRsFrGATiUuh25dtxYtnpbTx';
 
         var publicKeyRing = [{
-          xPubKey: new Bitcore.HDPublicKey(derivedPrivateKey['BIP44']),
+          xPubKey: new Fcash.HDPublicKey(derivedPrivateKey['BIP44']),
         }];
 
         var utxos = helpers.generateUtxos('P2PKH', publicKeyRing, 'm/1/0', 1, [1000, 2000]);
@@ -669,17 +669,17 @@ describe('client API', function() {
           addressType: 'P2PKH',
         };
         var t = Utils.buildTx(txp);
-        var bitcoreError = t.getSerializationError({
+        var fcashError = t.getSerializationError({
           disableIsFullySigned: true,
         });
-        should.not.exist(bitcoreError);
+        should.not.exist(fcashError);
       });
       it('should build a tx with provided output scripts', function() {
         var toAddress = 'msj42CCGruhRsFrGATiUuh25dtxYtnpbTx';
         var changeAddress = 'msj42CCGruhRsFrGATiUuh25dtxYtnpbTx';
 
         var publicKeyRing = [{
-          xPubKey: new Bitcore.HDPublicKey(derivedPrivateKey['BIP44']),
+          xPubKey: new Fcash.HDPublicKey(derivedPrivateKey['BIP44']),
         }];
 
         var utxos = helpers.generateUtxos('P2PKH', publicKeyRing, 'm/1/0', 1, [0.001]);
@@ -707,10 +707,10 @@ describe('client API', function() {
           addressType: 'P2PKH',
         };
         var t = Utils.buildTx(txp);
-        var bitcoreError = t.getSerializationError({
+        var fcashError = t.getSerializationError({
           disableIsFullySigned: true,
         });
-        should.not.exist(bitcoreError);
+        should.not.exist(fcashError);
         t.outputs.length.should.equal(4);
         t.outputs[0].script.toHex().should.equal(txp.outputs[0].script);
         t.outputs[0].satoshis.should.equal(txp.outputs[0].amount);
@@ -718,7 +718,7 @@ describe('client API', function() {
         t.outputs[1].satoshis.should.equal(txp.outputs[1].amount);
         t.outputs[2].script.toHex().should.equal(txp.outputs[2].script);
         t.outputs[2].satoshis.should.equal(txp.outputs[2].amount);
-        var changeScript = Bitcore.Script.fromAddress(txp.changeAddress.address).toHex();
+        var changeScript = Fcash.Script.fromAddress(txp.changeAddress.address).toHex();
         t.outputs[3].script.toHex().should.equal(changeScript);
       });
       it('should fail if provided output has no either toAddress or script', function() {
@@ -726,7 +726,7 @@ describe('client API', function() {
         var changeAddress = 'msj42CCGruhRsFrGATiUuh25dtxYtnpbTx';
 
         var publicKeyRing = [{
-          xPubKey: new Bitcore.HDPublicKey(derivedPrivateKey['BIP44']),
+          xPubKey: new Fcash.HDPublicKey(derivedPrivateKey['BIP44']),
         }];
 
         var utxos = helpers.generateUtxos('P2PKH', publicKeyRing, 'm/1/0', 1, [0.001]);
@@ -757,25 +757,25 @@ describe('client API', function() {
 
         txp.outputs[0].toAddress = "18433T2TSgajt9jWhcTBw4GoNREA6LpX3E";
         var t = Utils.buildTx(txp);
-        var bitcoreError = t.getSerializationError({
+        var fcashError = t.getSerializationError({
           disableIsFullySigned: true,
         });
-        should.not.exist(bitcoreError);
+        should.not.exist(fcashError);
 
         delete txp.outputs[0].toAddress;
         txp.outputs[0].script = "512103ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff210314a96cd6f5a20826070173fe5b7e9797f21fc8ca4a55bcb2d2bde99f55dd352352ae";
         t = Utils.buildTx(txp);
-        var bitcoreError = t.getSerializationError({
+        var fcashError = t.getSerializationError({
           disableIsFullySigned: true,
         });
-        should.not.exist(bitcoreError);
+        should.not.exist(fcashError);
       });
       it('should build a v3 tx proposal', function() {
         var toAddress = 'msj42CCGruhRsFrGATiUuh25dtxYtnpbTx';
         var changeAddress = 'msj42CCGruhRsFrGATiUuh25dtxYtnpbTx';
 
         var publicKeyRing = [{
-          xPubKey: new Bitcore.HDPublicKey(derivedPrivateKey['BIP44']),
+          xPubKey: new Fcash.HDPublicKey(derivedPrivateKey['BIP44']),
         }];
 
         var utxos = helpers.generateUtxos('P2PKH', publicKeyRing, 'm/1/0', 1, [1000, 2000]);
@@ -801,10 +801,10 @@ describe('client API', function() {
           addressType: 'P2PKH',
         };
         var t = Utils.buildTx(txp);
-        var bitcoreError = t.getSerializationError({
+        var fcashError = t.getSerializationError({
           disableIsFullySigned: true,
         });
-        should.not.exist(bitcoreError);
+        should.not.exist(fcashError);
       });
     });
 
@@ -814,7 +814,7 @@ describe('client API', function() {
         var changeAddress = 'msj42CCGruhRsFrGATiUuh25dtxYtnpbTx';
 
         var publicKeyRing = [{
-          xPubKey: new Bitcore.HDPublicKey(derivedPrivateKey['BIP45']),
+          xPubKey: new Fcash.HDPublicKey(derivedPrivateKey['BIP45']),
         }];
 
         var utxos = helpers.generateUtxos('P2SH', publicKeyRing, 'm/2147483647/0/0', 1, [1000, 2000]);
@@ -839,7 +839,7 @@ describe('client API', function() {
         var changeAddress = 'msj42CCGruhRsFrGATiUuh25dtxYtnpbTx';
 
         var publicKeyRing = [{
-          xPubKey: new Bitcore.HDPublicKey(derivedPrivateKey['BIP44']),
+          xPubKey: new Fcash.HDPublicKey(derivedPrivateKey['BIP44']),
         }];
 
         var utxos = helpers.generateUtxos('P2PKH', publicKeyRing, 'm/1/0', 1, [1000, 2000]);
@@ -864,7 +864,7 @@ describe('client API', function() {
         var changeAddress = 'msj42CCGruhRsFrGATiUuh25dtxYtnpbTx';
 
         var publicKeyRing = [{
-          xPubKey: new Bitcore.HDPublicKey(derivedPrivateKey['BIP44']),
+          xPubKey: new Fcash.HDPublicKey(derivedPrivateKey['BIP44']),
         }];
 
         var utxos = helpers.generateUtxos('P2PKH', publicKeyRing, 'm/1/0', 1, [1000, 2000]);
@@ -896,7 +896,7 @@ describe('client API', function() {
         var changeAddress = 'msj42CCGruhRsFrGATiUuh25dtxYtnpbTx';
 
         var publicKeyRing = [{
-          xPubKey: new Bitcore.HDPublicKey(derivedPrivateKey['BIP44']),
+          xPubKey: new Fcash.HDPublicKey(derivedPrivateKey['BIP44']),
         }];
 
         var utxos = helpers.generateUtxos('P2PKH', publicKeyRing, 'm/1/0', 1, [0.001]);
@@ -930,7 +930,7 @@ describe('client API', function() {
         var changeAddress = 'msj42CCGruhRsFrGATiUuh25dtxYtnpbTx';
 
         var publicKeyRing = [{
-          xPubKey: new Bitcore.HDPublicKey(derivedPrivateKey['BIP44']),
+          xPubKey: new Fcash.HDPublicKey(derivedPrivateKey['BIP44']),
         }];
 
         var utxos = helpers.generateUtxos('P2PKH', publicKeyRing, 'm/1/0', 1, [1000, 2000]);
@@ -965,7 +965,7 @@ describe('client API', function() {
         var changeAddress = 'msj42CCGruhRsFrGATiUuh25dtxYtnpbTx';
 
         var publicKeyRing = [{
-          xPubKey: new Bitcore.HDPublicKey(derivedPrivateKey['BIP44']),
+          xPubKey: new Fcash.HDPublicKey(derivedPrivateKey['BIP44']),
         }];
 
         var utxos = helpers.generateUtxos('P2PKH', publicKeyRing, 'm/1/0', 1, [1000, 2000]);
@@ -1004,7 +1004,7 @@ describe('client API', function() {
       var i = 0;
       while (i++ < 100) {
         var walletId = Uuid.v4();
-        var walletPrivKey = new Bitcore.PrivateKey();
+        var walletPrivKey = new Fcash.PrivateKey();
         var network = i % 2 == 0 ? 'testnet' : 'livenet';
         var coin = i % 3 == 0 ? 'bch' : 'btc';
         var secret = Client._buildSecret(walletId, walletPrivKey, coin, network);
@@ -1023,7 +1023,7 @@ describe('client API', function() {
 
     it('should create secret and parse secret from string', function() {
       var walletId = Uuid.v4();
-      var walletPrivKey = new Bitcore.PrivateKey();
+      var walletPrivKey = new Fcash.PrivateKey();
       var coin = 'btc';
       var network = 'testnet';
       var secret = Client._buildSecret(walletId, walletPrivKey.toString(), coin, network);
@@ -1130,7 +1130,7 @@ describe('client API', function() {
     });
     it('should be able to access wallet name in non-encrypted wallet (legacy)', function(done) {
       clients[0].seedFromRandomWithMnemonic();
-      var wpk = new Bitcore.PrivateKey();
+      var wpk = new Fcash.PrivateKey();
       var args = {
         name: 'mywallet',
         m: 1,
@@ -1377,7 +1377,7 @@ describe('client API', function() {
       helpers.createAndJoinWallet(clients, 2, 3, function() {
         helpers.tamperResponse([clients[0], clients[1]], 'get', '/v1/wallets/', {}, function(status) {
           // Replace caller's pubkey
-          status.wallet.copayers[1].xPubKey = (new Bitcore.HDPrivateKey()).publicKey;
+          status.wallet.copayers[1].xPubKey = (new Fcash.HDPrivateKey()).publicKey;
           // Add a correct signature
           status.wallet.copayers[1].xPubKeySignature = Utils.signMessage(
             status.wallet.copayers[1].xPubKey.toString(),
@@ -2878,8 +2878,8 @@ describe('client API', function() {
               clients[1].broadcastTxProposal(yy, function(err, zz, memo) {
                 should.not.exist(err);
                 var args = http.lastCall.args[0];
-                var data = BitcorePayPro.Payment.decode(args.body);
-                var pay = new BitcorePayPro();
+                var data = FcashPayPro.Payment.decode(args.body);
+                var pay = new FcashPayPro();
                 var p = pay.makePayment(data);
                 var refund_to = p.get('refund_to');
                 refund_to.length.should.equal(1);
@@ -2890,8 +2890,8 @@ describe('client API', function() {
                 amount.low.should.equal(404500);
                 amount.high.should.equal(0);
                 var s = refund_to.get('script');
-                s = new Bitcore.Script(s.buffer.slice(s.offset, s.limit));
-                var addr = new Bitcore.Address.fromScript(s, 'testnet');
+                s = new Fcash.Script(s.buffer.slice(s.offset, s.limit));
+                var addr = new Fcash.Address.fromScript(s, 'testnet');
                 addr.toString().should.equal(changeAddress);
                 done();
               });
@@ -2915,11 +2915,11 @@ describe('client API', function() {
 
                 should.not.exist(err);
                 var args = http.lastCall.args[0];
-                var data = BitcorePayPro.Payment.decode(args.body);
-                var pay = new BitcorePayPro();
+                var data = FcashPayPro.Payment.decode(args.body);
+                var pay = new FcashPayPro();
                 var p = pay.makePayment(data);
                 var rawTx = p.get('transactions')[0].toBuffer();
-                var tx = new Bitcore.Transaction(rawTx);
+                var tx = new Fcash.Transaction(rawTx);
                 var script = tx.inputs[0].script;
                 script.isScriptHashIn().should.equal(true);
                 done();
@@ -3065,8 +3065,8 @@ describe('client API', function() {
             clients[0].broadcastTxProposal(xx, function(err, zz, memo) {
               should.not.exist(err);
               var args = http.lastCall.args[0];
-              var data = BitcorePayPro.Payment.decode(args.body);
-              var pay = new BitcorePayPro();
+              var data = FcashPayPro.Payment.decode(args.body);
+              var pay = new FcashPayPro();
               var p = pay.makePayment(data);
               var refund_to = p.get('refund_to');
               refund_to.length.should.equal(1);
@@ -3077,8 +3077,8 @@ describe('client API', function() {
               amount.low.should.equal(404500);
               amount.high.should.equal(0);
               var s = refund_to.get('script');
-              s = new Bitcore.Script(s.buffer.slice(s.offset, s.limit));
-              var addr = new Bitcore.Address.fromScript(s, 'testnet');
+              s = new Fcash.Script(s.buffer.slice(s.offset, s.limit));
+              var addr = new Fcash.Address.fromScript(s, 'testnet');
               addr.toString().should.equal(changeAddress);
               done();
             });
@@ -3098,11 +3098,11 @@ describe('client API', function() {
             clients[0].broadcastTxProposal(xx, function(err, zz, memo) {
               should.not.exist(err);
               var args = http.lastCall.args[0];
-              var data = BitcorePayPro.Payment.decode(args.body);
-              var pay = new BitcorePayPro();
+              var data = FcashPayPro.Payment.decode(args.body);
+              var pay = new FcashPayPro();
               var p = pay.makePayment(data);
               var rawTx = p.get('transactions')[0].toBuffer();
-              var tx = new Bitcore.Transaction(rawTx);
+              var tx = new Fcash.Transaction(rawTx);
               var script = tx.inputs[0].script;
               script.isPublicKeyHashIn().should.equal(true);
               done();
@@ -3160,8 +3160,8 @@ describe('client API', function() {
 
               should.not.exist(err);
               var args = http.lastCall.args[0];
-              var data = BitcorePayPro.Payment.decode(args.body);
-              var pay = new BitcorePayPro();
+              var data = FcashPayPro.Payment.decode(args.body);
+              var pay = new FcashPayPro();
               var p = pay.makePayment(data);
               var refund_to = p.get('refund_to');
               refund_to.length.should.equal(1);
@@ -3172,8 +3172,8 @@ describe('client API', function() {
               amount.low.should.equal(830600);
               amount.high.should.equal(0);
               var s = refund_to.get('script');
-              s = new Bitcore_['bch'].Script(s.buffer.slice(s.offset, s.limit));
-              var addr = new Bitcore_['bch'].Address.fromScript(s);
+              s = new Fcash_['bch'].Script(s.buffer.slice(s.offset, s.limit));
+              var addr = new Fcash_['bch'].Address.fromScript(s);
               addr.toString().should.equal(changeAddress);
               done();
             });
@@ -3193,11 +3193,11 @@ describe('client API', function() {
             clients[0].broadcastTxProposal(xx, function(err, zz, memo) {
               should.not.exist(err);
               var args = http.lastCall.args[0];
-              var data = BitcorePayPro.Payment.decode(args.body);
-              var pay = new BitcorePayPro();
+              var data = FcashPayPro.Payment.decode(args.body);
+              var pay = new FcashPayPro();
               var p = pay.makePayment(data);
               var rawTx = p.get('transactions')[0].toBuffer();
-              var tx = new  Bitcore_['bch'].Transaction(rawTx);
+              var tx = new  Fcash_['bch'].Transaction(rawTx);
               var script = tx.inputs[0].script;
               script.isPublicKeyHashIn().should.equal(true);
               done();
@@ -3347,7 +3347,7 @@ describe('client API', function() {
               clients[0].broadcastTxProposal(txp, function(err, txp) {
                 should.not.exist(err);
                 txp.status.should.equal('broadcasted');
-                txp.txid.should.equal((new Bitcore.Transaction(blockchainExplorerMock.lastBroadcasted)).id);
+                txp.txid.should.equal((new Fcash.Transaction(blockchainExplorerMock.lastBroadcasted)).id);
                 done();
               });
             } else {
@@ -3412,7 +3412,7 @@ describe('client API', function() {
               clients[0].broadcastTxProposal(txp, function(err, txp) {
                 should.not.exist(err);
                 txp.status.should.equal('broadcasted');
-                txp.txid.should.equal((new Bitcore.Transaction(blockchainExplorerMock.lastBroadcasted)).id);
+                txp.txid.should.equal((new Fcash.Transaction(blockchainExplorerMock.lastBroadcasted)).id);
                 txp.outputs[0].message.should.equal('output 0');
                 txp.message.should.equal('hello');
                 done();
@@ -3485,7 +3485,7 @@ describe('client API', function() {
                   txp.status.should.equal('accepted');
                   clients[1].broadcastTxProposal(txp, function(err, txp) {
                     txp.status.should.equal('broadcasted');
-                    txp.txid.should.equal((new Bitcore.Transaction(blockchainExplorerMock.lastBroadcasted)).id);
+                    txp.txid.should.equal((new Fcash.Transaction(blockchainExplorerMock.lastBroadcasted)).id);
                     done();
                   });
                 });
@@ -3548,7 +3548,7 @@ describe('client API', function() {
                   txp.status.should.equal('accepted');
                   clients[2].broadcastTxProposal(txp, function(err, txp) {
                     txp.status.should.equal('broadcasted');
-                    txp.txid.should.equal((new Bitcore.Transaction(blockchainExplorerMock.lastBroadcasted)).id);
+                    txp.txid.should.equal((new Fcash.Transaction(blockchainExplorerMock.lastBroadcasted)).id);
                     done();
                   });
                 });
@@ -5249,7 +5249,7 @@ describe('client API', function() {
             var c = clients[0].credentials;
 
             // Ggenerate a new priv key, not registered
-            var k = new Bitcore.PrivateKey();
+            var k = new Fcash.PrivateKey();
             c.requestPrivKey = k.toString();
             c.requestPubKey = k.toPublicKey().toString();
             done();
@@ -5284,7 +5284,7 @@ describe('client API', function() {
           url.should.contain('/copayers');
           body.should.not.contain('pepe');
 
-          var k = new Bitcore.PrivateKey(key);
+          var k = new Fcash.PrivateKey(key);
           var c = clients[0].credentials;
           c.requestPrivKey = k.toString();
           c.requestPubKey = k.toPublicKey().toString();
@@ -5321,7 +5321,7 @@ describe('client API', function() {
         clients[0].addAccess({
           generateNewKey: true
         }, function(err, x, key) {
-          var k = new Bitcore.PrivateKey(key);
+          var k = new Fcash.PrivateKey(key);
           var c = clients[0].credentials;
           c.requestPrivKey = k.toString();
           c.requestPubKey = k.toPublicKey().toString();
@@ -5404,7 +5404,7 @@ describe('client API', function() {
     var addr= addrMap[coin];
 
     describe('Sweep paper wallet ' + coin, function() {
-      var B = Bitcore_[coin];
+      var B = Fcash_[coin];
       it.skip('should decrypt bip38 encrypted private key', function(done) {
         this.timeout(60000);
         clients[0].decryptBIP38PrivateKey('6PfRh9ZnWtiHrGoPPSzXe6iafTXc6FSXDhSBuDvvDmGd1kpX2Gvy1CfTcA', 'passphrase', {}, function(err, result) {

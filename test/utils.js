@@ -4,7 +4,7 @@ var _ = require('lodash');
 var chai = require('chai');
 var sinon = require('sinon');
 var should = chai.should();
-var Bitcore = require('bitcore-lib');
+var Fcash = require('fcash-b');
 
 var Utils = require('../lib/common/utils');
 
@@ -286,7 +286,7 @@ describe('Utils', function() {
 
   describe('#privateKeyToAESKey', function() {
     it('should be ok', function() {
-      var privKey = new Bitcore.PrivateKey('09458c090a69a38368975fb68115df2f4b0ab7d1bc463fc60c67aa1730641d6c').toString();
+      var privKey = new Fcash.PrivateKey('09458c090a69a38368975fb68115df2f4b0ab7d1bc463fc60c67aa1730641d6c').toString();
       Utils.privateKeyToAESKey(privKey).should.be.equal('2HvmUYBSD0gXLea6z0n7EQ==');
     });
     it('should fail if pk has invalid values', function() {
@@ -309,9 +309,9 @@ describe('Utils', function() {
 
   describe('#verifyRequestPubKey', function() {
     it('should generate and check request pub key', function() {
-      var reqPubKey = (new Bitcore.PrivateKey).toPublicKey();
-      var xPrivKey = new Bitcore.HDPrivateKey();
-      var xPubKey = new Bitcore.HDPublicKey(xPrivKey);
+      var reqPubKey = (new Fcash.PrivateKey).toPublicKey();
+      var xPrivKey = new Fcash.HDPrivateKey();
+      var xPubKey = new Fcash.HDPublicKey(xPrivKey);
 
 
       var sig = Utils.signRequestPubKey(reqPubKey.toString(), xPrivKey);
@@ -321,12 +321,12 @@ describe('Utils', function() {
 
     it('should fail to check a request pub key with wrong key', function() {
       var reqPubKey = '02c2c1c6e75cfc50235ff4a2eb848385c2871b8c94e285ee82eaced1dcd5dd568e';
-      var xPrivKey = new Bitcore.HDPrivateKey();
-      var xPubKey = new Bitcore.HDPublicKey(xPrivKey);
+      var xPrivKey = new Fcash.HDPrivateKey();
+      var xPubKey = new Fcash.HDPublicKey(xPrivKey);
       var sig = Utils.signRequestPubKey(reqPubKey, xPrivKey);
 
-      var xPrivKey2 = new Bitcore.HDPrivateKey();
-      var xPubKey2 = new Bitcore.HDPublicKey(xPrivKey2);
+      var xPrivKey2 = new Fcash.HDPrivateKey();
+      var xPubKey2 = new Fcash.HDPublicKey(xPrivKey2);
       var valid = Utils.verifyRequestPubKey(reqPubKey, sig, xPubKey2);
       valid.should.be.equal(false);
     });

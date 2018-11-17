@@ -2,16 +2,16 @@
 
 BIN_PATH:=node_modules/.bin/
 
-all:	bitcore-wallet-client.min.js
+all:	fcash-wallet-client.min.js
 
 clean:
-	rm bitcore-wallet-client.js
-	rm bitcore-wallet-client.min.js
+	rm fcash-wallet-client.js
+	rm fcash-wallet-client.min.js
 
-bitcore-wallet-client.js: index.js lib/*.js
+fcash-wallet-client.js: index.js lib/*.js
 	${BIN_PATH}browserify $< > $@
 
-bitcore-wallet-client.min.js: bitcore-wallet-client.js
+fcash-wallet-client.min.js: fcash-wallet-client.js
 	uglify  -s $<  -o $@
 
 cover:

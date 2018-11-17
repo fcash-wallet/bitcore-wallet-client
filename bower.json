@@ -1,17 +1,17 @@
 {
-  "name": "bitcore-wallet-client",
+  "name": "fcash-et-client",
   "main": "index.js",
   "version": "2.1.1",
-  "homepage": "https://github.com/bitpay/bitcore-wallet-client",
+  "homepage": "https://github.com/fcash-wallet/fcash-et-client",
   "authors": ["BitPay Inc"],
-  "description": "Client for bitcore-wallet-service",
+  "description": "Client for fcash-et-service",
   "keywords": [
     "bitcoin",
     "copay",
     "multisig",
     "wallet",
     "client",
-    "bitcore"
+    "fcash"
   ],
   "ignore": [
     "**/.*",
